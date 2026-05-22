@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { WrappedMeta } from "@/data/types";
 
 interface IntroSlideProps {
@@ -38,16 +38,65 @@ const textLines = [
   "acho que esse é o melhor\njeito de expressar algo",
 ];
 
+function useTypingSound() {
+  const ctxRef = useRef<AudioContext | null>(null);
+
+  // desbloqueia o AudioContext no primeiro toque/clique
+  useEffect(() => {
+    function unlock() {
+      if (!ctxRef.current) ctxRef.current = new AudioContext();
+      ctxRef.current.resume();
+    }
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("touchstart", unlock, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+  }, []);
+
+  const play = useCallback(() => {
+    try {
+      if (!ctxRef.current) ctxRef.current = new AudioContext();
+      const ctx = ctxRef.current;
+      if (ctx.state === "suspended") ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(900 + Math.random() * 300, ctx.currentTime);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.07);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.07);
+    } catch {}
+  }, []);
+
+  return play;
+}
+
 export default function IntroSlide({ meta, onStart }: IntroSlideProps) {
   const [phase, setPhase] = useState<"drop" | "burst" | "text">("drop");
   const [textIndex, setTextIndex] = useState(0);
   const [heartBtn, setHeartBtn] = useState<"hidden" | "heart" | "pulse" | "glow" | "morph" | "button">("hidden");
+  const playTyping = useTypingSound();
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("burst"), 2000);
     const t2 = setTimeout(() => setPhase("text"), 3400);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
+
+  useEffect(() => {
+    if (phase !== "text" || textIndex >= textLines.length) return;
+    const chars = textLines[textIndex].replace(/\n/g, "").length;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (let i = 0; i < chars; i++) {
+      timers.push(setTimeout(playTyping, i * 50));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [phase, textIndex, playTyping]);
 
   useEffect(() => {
     if (phase !== "text") return;
@@ -264,6 +313,21 @@ export default function IntroSlide({ meta, onStart }: IntroSlideProps) {
                   })}
                 </>
               )}
+
+              {/* mensagem de volume */}
+              <AnimatePresence>
+                {heartBtn === "button" && (
+                  <motion.p
+                    className="absolute -top-9 text-pink-200/35 text-[11px] tracking-wide whitespace-nowrap"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ delay: 0.4, duration: 0.7 }}
+                  >
+                    🔊 aumenta o volume antes de começar
+                  </motion.p>
+                )}
+              </AnimatePresence>
 
               {/* botão pill */}
               <motion.button

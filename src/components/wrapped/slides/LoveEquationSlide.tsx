@@ -141,17 +141,18 @@ export default function LoveEquationSlide({ partnerName, recipientName }: LoveEq
   // draw heart on plot
   useEffect(() => {
     if (phase !== "plotting") return;
+
     const el = pathRef.current;
-    if (!el) return;
+    if (el) {
+      const length = el.getTotalLength();
+      el.style.strokeDasharray = `${length}`;
+      el.style.strokeDashoffset = `${length}`;
 
-    const length = el.getTotalLength();
-    el.style.strokeDasharray = `${length}`;
-    el.style.strokeDashoffset = `${length}`;
-
-    requestAnimationFrame(() => {
-      el.style.transition = "stroke-dashoffset 3s ease-in-out";
-      el.style.strokeDashoffset = "0";
-    });
+      requestAnimationFrame(() => {
+        el.style.transition = "stroke-dashoffset 3s ease-in-out";
+        el.style.strokeDashoffset = "0";
+      });
+    }
 
     const t = setTimeout(() => {
       setDrawn(true);
@@ -463,7 +464,7 @@ export default function LoveEquationSlide({ partnerName, recipientName }: LoveEq
         {phase === "result" && (
           <motion.div
             key="result"
-            className="flex flex-col items-center gap-5"
+            className="flex flex-col items-center gap-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
@@ -473,7 +474,7 @@ export default function LoveEquationSlide({ partnerName, recipientName }: LoveEq
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8, type: "spring", damping: 10 }}
             >
-              <svg width="180" height="180" viewBox="0 0 240 240">
+              <svg width="150" height="150" viewBox="0 0 240 240">
                 <defs>
                   <linearGradient id="heartResultFill" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#FF85C8" stopOpacity="0.4" />
@@ -513,6 +514,15 @@ export default function LoveEquationSlide({ partnerName, recipientName }: LoveEq
               transition={{ delay: 1.5, duration: 1 }}
             >
               o nosso.
+            </motion.p>
+
+            <motion.p
+              className="text-pink-200/40 text-[12px] leading-relaxed"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2.0, duration: 0.8 }}
+            >
+              epa, olha como ficou bonito o resultado, rs
             </motion.p>
           </motion.div>
         )}

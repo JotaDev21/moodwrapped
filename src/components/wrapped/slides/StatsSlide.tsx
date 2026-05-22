@@ -74,17 +74,83 @@ function StatCard({ stat }: { stat: StatItem }) {
   const displayValue = computedValue ?? stat.value;
   const isNumeric = typeof displayValue === "number";
   const isDays = stat.label === "dias juntos";
-  const isFofa = stat.label.includes("fofa");
+  const isBeleza = stat.label.includes("beleza");
+
+  if (isBeleza) {
+    const starPositions = Array.from({ length: 16 }, (_, i) => ({
+      id: i,
+      left: `${5 + Math.random() * 90}%`,
+      top: `${5 + Math.random() * 90}%`,
+      size: 1 + Math.random() * 2,
+      dur: 2 + Math.random() * 3,
+      delay: Math.random() * 2,
+    }));
+
+    return (
+      <motion.div
+        variants={staggerItem}
+        className="col-span-2 relative flex flex-col items-center justify-center p-7 rounded-2xl text-center overflow-hidden"
+        style={{
+          background: "radial-gradient(ellipse at 50% 40%, rgba(255,133,200,0.07) 0%, rgba(255,92,147,0.03) 50%, rgba(0,0,0,0) 100%)",
+          border: "1px solid rgba(255,133,200,0.12)",
+          boxShadow: "0 0 40px rgba(255,133,200,0.06)",
+        }}
+      >
+        {starPositions.map((s) => (
+          <motion.div
+            key={s.id}
+            className="absolute rounded-full bg-pink-200"
+            style={{ left: s.left, top: s.top, width: s.size, height: s.size }}
+            animate={{ opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
+            transition={{ duration: s.dur, delay: s.delay, repeat: Infinity, ease: "easeInOut" }}
+          />
+        ))}
+
+        <motion.span
+          className="text-[52px] font-bold leading-none"
+          style={{
+            color: "#FF85C8",
+            textShadow: "0 0 30px rgba(255,133,200,0.6), 0 0 60px rgba(255,133,200,0.3)",
+          }}
+          animate={{
+            textShadow: [
+              "0 0 20px rgba(255,133,200,0.4), 0 0 40px rgba(255,133,200,0.2)",
+              "0 0 40px rgba(255,133,200,0.8), 0 0 80px rgba(255,133,200,0.4)",
+              "0 0 20px rgba(255,133,200,0.4), 0 0 40px rgba(255,133,200,0.2)",
+            ],
+            scale: [1, 1.06, 1],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          ∞
+        </motion.span>
+
+        <motion.p
+          className="text-pink-200/60 text-[13px] mt-4 tracking-wide"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          {stat.label}
+        </motion.p>
+
+        <motion.p
+          className="text-pink-300/20 text-[10px] mt-1 italic"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 1 }}
+        >
+          incalculável.
+        </motion.p>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
       variants={staggerItem}
-      className={`flex flex-col items-center justify-center p-5 rounded-2xl bg-pink-100/[0.02] border border-pink-200/[0.05] text-center ${isFofa ? "col-span-2" : isDays ? "col-span-2" : "aspect-square"}`}
+      className={`flex flex-col items-center justify-center p-5 rounded-2xl bg-pink-100/[0.02] border border-pink-200/[0.05] text-center ${isDays ? "col-span-2" : "aspect-square"}`}
     >
-      {isFofa && (
-        <span className="text-5xl mb-2">🎀</span>
-      )}
-
       {isDays && stat.computeFrom ? (
         <>
           <LiveTimer since={stat.computeFrom} />

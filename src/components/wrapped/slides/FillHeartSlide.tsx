@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useState, useCallback } from "react";
+import RevealText from "@/components/ui/RevealText";
 
 const MAX_PUMPS = 12;
 
@@ -331,14 +332,12 @@ export default function FillHeartSlide() {
                     ainda duvida do meu amor por ti?
                   </motion.p>
 
-                  <motion.p
-                    className="text-pink-200/40 text-[15px] text-center max-w-[260px]"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.2, duration: 1 }}
-                  >
-                    eu amo você completamente.
-                  </motion.p>
+                  <RevealText
+                    text="eu amo você hoje, amanhã, provavelmente depois de amanhã e assim em diante. sabe o porquê? porque você me completa, você me faz bem, você me faz feliz de verdade verdadeira. amo seu sorriso, suas risadas, te aceito do jeitinho que você é, abraçarei suas inseguranças, irei fazer questão de te elogiar todos os dias e dizer o quanto você é especial pra mim e o quanto eu te amo."
+                    className="text-pink-200/50 text-[13px] text-center max-w-[260px] leading-relaxed"
+                    delay={1.2}
+                    wordInterval={0.08}
+                  />
 
                   <motion.span
                     className="text-[36px]"

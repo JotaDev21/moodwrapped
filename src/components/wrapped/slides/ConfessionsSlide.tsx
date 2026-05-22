@@ -1,15 +1,89 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface ConfessionsSlideProps {
   confessions: string[];
 }
 
+function useTypewriter(text: string, active: boolean, speed = 38) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!active) {
+      setDisplayed("");
+      setDone(false);
+      return;
+    }
+    setDisplayed("");
+    setDone(false);
+    let i = 0;
+    function tick() {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i < text.length) {
+        // slight natural variation in speed
+        const jitter = Math.random() * 20 - 10;
+        timer = setTimeout(tick, speed + jitter);
+      } else {
+        setDone(true);
+      }
+    }
+    let timer = setTimeout(tick, speed);
+    return () => clearTimeout(timer);
+  }, [text, active, speed]);
+
+  return { displayed, done };
+}
+
+function ConfessionItem({
+  text,
+  onDone,
+}: {
+  text: string;
+  onDone: () => void;
+}) {
+  const { displayed, done } = useTypewriter(text, true, 38);
+  const calledDone = useRef(false);
+
+  useEffect(() => {
+    if (done && !calledDone.current) {
+      calledDone.current = true;
+      const t = setTimeout(onDone, 2200);
+      return () => clearTimeout(t);
+    }
+  }, [done, onDone]);
+
+  return (
+    <div className="flex flex-col items-center gap-3 max-w-[300px] text-center">
+      <motion.div
+        className="w-4 h-[1px] bg-pink-300/20"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.6 }}
+      />
+      <p className="text-pink-50/75 text-[17px] leading-[1.7] tracking-wide font-light">
+        {displayed}
+        <motion.span
+          className="inline-block w-[2px] h-[1.1em] ml-[2px] align-middle bg-pink-300/60"
+          animate={done ? { opacity: 0 } : { opacity: [1, 0, 1] }}
+          transition={
+            done
+              ? { duration: 0.3 }
+              : { duration: 0.7, repeat: Infinity, ease: "linear" }
+          }
+        />
+      </p>
+    </div>
+  );
+}
+
 export default function ConfessionsSlide({ confessions }: ConfessionsSlideProps) {
   const [phase, setPhase] = useState<"intro" | "list" | "all">("intro");
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     if (phase === "intro") {
@@ -18,19 +92,21 @@ export default function ConfessionsSlide({ confessions }: ConfessionsSlideProps)
     }
   }, [phase]);
 
-  useEffect(() => {
-    if (phase !== "list") return;
-    if (index >= confessions.length) {
-      const t = setTimeout(() => setPhase("all"), 400);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => setIndex((i) => i + 1), 3200);
-    return () => clearTimeout(t);
-  }, [phase, index, confessions.length]);
+  function handleConfessionDone() {
+    setVisible(false);
+    setTimeout(() => {
+      const next = index + 1;
+      if (next >= confessions.length) {
+        setPhase("all");
+      } else {
+        setIndex(next);
+        setVisible(true);
+      }
+    }, 700);
+  }
 
   return (
     <div className="relative flex flex-col items-center justify-center h-full px-8 overflow-hidden">
-      {/* intro */}
       <AnimatePresence mode="wait">
         {phase === "intro" && (
           <motion.div
@@ -59,27 +135,27 @@ export default function ConfessionsSlide({ confessions }: ConfessionsSlideProps)
         )}
       </AnimatePresence>
 
-      {/* confissões uma por vez */}
       {phase === "list" && (
-        <div className="h-[100px] flex items-center justify-center">
+        <div className="flex items-center justify-center min-h-[120px]">
           <AnimatePresence mode="wait">
-            {index < confessions.length && (
-              <motion.p
+            {visible && index < confessions.length && (
+              <motion.div
                 key={index}
-                className="text-pink-50/70 text-[18px] leading-relaxed text-center max-w-[300px]"
-                initial={{ opacity: 0, filter: "blur(8px)" }}
-                animate={{ opacity: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, filter: "blur(6px)" }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 12, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
               >
-                {confessions[index]}
-              </motion.p>
+                <ConfessionItem
+                  text={confessions[index]}
+                  onDone={handleConfessionDone}
+                />
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
       )}
 
-      {/* todas juntas no final */}
       {phase === "all" && (
         <motion.div
           className="flex flex-col gap-4 max-w-[300px]"
@@ -90,7 +166,7 @@ export default function ConfessionsSlide({ confessions }: ConfessionsSlideProps)
           {confessions.map((c, i) => (
             <motion.p
               key={i}
-              className="text-pink-50/50 text-[13px] leading-relaxed text-center"
+              className="text-pink-50/40 text-[12px] leading-relaxed text-center"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.15, duration: 0.5 }}

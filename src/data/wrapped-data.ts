@@ -60,7 +60,7 @@ export const wrappedData: WrappedConfig = {
       prefix: "",
     },
     {
-      label: "vezes que ela foi fofa",
+      label: "sua beleza diante do universo",
       value: "∞",
     },
   ],
@@ -71,6 +71,8 @@ export const wrappedData: WrappedConfig = {
     "Às vezes eu fico sorrindo do nada lembrando de algo que você falou.",
     "Eu penso em você antes de dormir toda noite.",
     "Você foi a primeira pessoa que me fez querer ser melhor.",
+    "Eu fico tristinho quando você demora pra responder. Não falo nada, mas fico.",
+    "Quando você não come direito eu fico preocupado de verdade. Não é frescura, é porque me importo.",
   ],
 
   personalLists: [
