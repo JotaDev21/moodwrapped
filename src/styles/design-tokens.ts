@@ -1,0 +1,16 @@
+export const slideAtmosphere: Record<number, { color: string; position: string }> = {
+  0: { color: "#2d0a1f", position: "50% 0%" },
+  1: { color: "#190816", position: "30% 50%" },
+  2: { color: "#190816", position: "40% 40%" },
+  3: { color: "#2d0a1f", position: "50% 50%" },
+  4: { color: "#080406", position: "50% 50%" },
+  5: { color: "#2d0a1f", position: "60% 30%" },
+  6: { color: "#1f0a18", position: "40% 50%" },
+  7: { color: "#2d0a1f", position: "50% 40%" },
+  8: { color: "#180a14", position: "50% 40%" },
+  9: { color: "#0d0610", position: "50% 50%" },
+  10: { color: "#0a0410", position: "50% 50%" },
+  11: { color: "#120818", position: "50% 50%" },
+  12: { color: "#1a0a16", position: "50% 50%" },
+  13: { color: "#0d0509", position: "50% 60%" },
+};

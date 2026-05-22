@@ -1,0 +1,15 @@
+export { default as IntroSlide } from "./IntroSlide";
+export { default as EmotionSlide } from "./EmotionSlide";
+export { default as QuoteHighlightSlide } from "./QuoteHighlightSlide";
+export { default as QuoteSlide } from "./QuoteSlide";
+export { default as StatsSlide } from "./StatsSlide";
+export { default as SilenceSlide } from "./SilenceSlide";
+export { default as MomentsSlide } from "./MomentsSlide";
+export { default as PersonalListSlide } from "./PersonalListSlide";
+export { default as LetterSlide } from "./LetterSlide";
+export { default as ConfessionsSlide } from "./ConfessionsSlide";
+export { default as WhatYouAreSlide } from "./WhatYouAreSlide";
+export { default as MusicSlide } from "./MusicSlide";
+export { default as LoveEquationSlide } from "./LoveEquationSlide";
+export { default as FillHeartSlide } from "./FillHeartSlide";
+export { default as FinalSlide } from "./FinalSlide";
